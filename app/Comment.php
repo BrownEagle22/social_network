@@ -8,6 +8,7 @@ class Comment extends Model
 {
     protected $table = 'comments';
     protected $guarded = [];
+    protected $fillable = ['text'];
 
     public function post() {
         return $this->belongsTo('App\Post');

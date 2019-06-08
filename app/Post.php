@@ -8,6 +8,7 @@ class Post extends Model
 {
     protected $table = 'posts';
     protected $guarded = [];
+    protected $fillable = ['title', 'description', 'picture_path', 'privacy_type_id'];
 
     public function user() {
         return $this->belongsTo('App\User');

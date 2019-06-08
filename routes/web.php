@@ -18,3 +18,10 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::resource('activity', 'ActivityController', ['only' => ['store']]);
+Route::resource('comments', 'CommentController', ['only' => ['store', 'update', 'destroy']]);
+Route::resource('messages', 'MessageController', ['except' => ['edit', 'update']]);
+Route::resource('messageslikes', 'MessageLikeController', ['only' => ['store', 'delete']]);
+Route::resource('posts', 'PostController', ['except' => []]);
+Route::resource('postslikes', 'PostLikeController', ['only' => ['store', 'delete']]);
+Route::resource('users', 'UserController', ['except' => ['index', 'create', 'store']]);

@@ -16,4 +16,9 @@ class Message extends Model
     public function receivers() {
         return $this->belongsToMany('App\User', 'user_messages');
     }
+
+    public function isDeleted($userId) {
+        return MessageDeletion::where('user_id', '=', $userId)
+            ->where('message_id', '=', $this->id)->get()->count() === 0;
+    }
 }

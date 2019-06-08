@@ -18,7 +18,7 @@ class CreateCommentsTable extends Migration
             $table->integer('owner_id')->unsigned();
             $table->integer('post_id')->unsigned();
             $table->integer('deleter_id')->unsigned()->nullable();
-            $table->string('message');
+            $table->string('text');
 
             $table->foreign('owner_id')->references('id')->on('users');
             $table->foreign('post_id')->references('id')->on('posts');
