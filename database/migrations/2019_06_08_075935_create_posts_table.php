@@ -17,10 +17,10 @@ class CreatePostsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('owner_id')->unsigned();
             $table->integer('privacy_type_id')->unsigned();
-            $table->integer('deleter_id')->unsigned();
+            $table->integer('deleter_id')->unsigned()->nullable();
             $table->string('title');
             $table->string('description');
-            $table->string('picture_path');
+            $table->string('picture_path')->nullable();
 
             $table->foreign('owner_id')->references('id')->on('users');
             $table->foreign('privacy_type_id')->references('id')->on('privacy_type');
