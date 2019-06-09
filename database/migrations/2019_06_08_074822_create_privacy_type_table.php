@@ -14,9 +14,10 @@ class CreatePrivacyTypeTable extends Migration
     public function up()
     {
         Schema::create('privacy_type', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->integer('id')->unsigned();
+            $table->primary('id');
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
             $table->timestamps();
         });
     }

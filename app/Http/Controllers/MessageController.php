@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Message;
 use App\UserMessage;
 use App\MessageDeletion;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {

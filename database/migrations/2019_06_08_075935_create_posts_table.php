@@ -16,10 +16,10 @@ class CreatePostsTable extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('owner_id')->unsigned();
-            $table->integer('privacy_type_id')->unsigned();
+            $table->integer('privacy_type_id')->unsigned()->default(1);
             $table->integer('deleter_id')->unsigned()->nullable();
             $table->string('title');
-            $table->string('description');
+            $table->text('description');
             $table->string('picture_path')->nullable();
 
             $table->foreign('owner_id')->references('id')->on('users');

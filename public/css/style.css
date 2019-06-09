@@ -1,0 +1,47 @@
+#post-menu {
+    width: 100%;
+}
+
+#post-list-container {
+    padding-left: 15px;
+}
+
+.post-item-footer {
+    margin-bottom: 0;
+    margin-right: 15px;
+}
+
+#post-list-container .card {
+    margin: 10px 0;
+}
+
+#post-list-container .card-footer > div {
+    display: flex;
+    align-items: center;
+}
+
+#post-list-container .card-footer > div > div {
+    display: flex;
+    align-items: center;
+}
+
+#post-list-container .card-footer > div > div > a{
+    padding-left: 15px;
+    border-left: 1px solid gray;
+}
+
+#post-list-container .card-footer > div > p {
+    margin: 0;
+    text-align: right;
+}
+
+
+/*RIGHT PANEL*/
+.green-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background-color: green;
+    margin-right: 10px;
+}

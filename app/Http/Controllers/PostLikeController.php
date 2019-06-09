@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\PostLike;
 use App\Post;
+use Illuminate\Support\Facades\Auth;
 
 class PostLikeController extends Controller
 {
@@ -47,13 +48,30 @@ class PostLikeController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+
+        $postLike = PostLike::where('user_id', '=', Auth::user()['id'])
+            ->where('post_id', '=', $data['post_id'])
+            ->where('is_positive', '=', $data['is_positive'])
+            ->first();
+
+        if ($postLike)
+            return ['success' => false];
+
+        $postLike = PostLike::where('user_id', '=', Auth::user()['id'])
+            ->where('post_id', '=', $data['post_id'])
+            ->where('is_positive', '<>', $data['is_positive'])
+            ->first();
+
+        if ($postLike)
+            $postLike->delete();
+        
         $like = new PostLike();
         $like->is_positive = $data['is_positive'];
         $like->user()->associate(Auth::user());
-        $like->comment()->associate(Post::find($data['post_id']));
+        $like->post()->associate(Post::find($data['post_id']));
         $like->save();
 
-        return null;
+        return ['success' => true];
     }
 
     /**
@@ -96,9 +114,23 @@ class PostLikeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        PostLike::find($id)->delete();
-        return null;
+        $data = $request->all();
+
+        $postLike = PostLike::where('user_id', '=', Auth::user()['id'])
+            ->where('post_id', '=', $data['post_id'])
+            ->where('is_positive', '=', $data['is_positive'])
+            ->first();
+
+        if ($postLike)
+        {
+            $postLike->delete();
+            return ['success' => true];
+        }
+        else
+        {
+            return ['success' => false];
+        }
     }
 }

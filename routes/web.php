@@ -12,16 +12,21 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return redirect()->action('PostController@index');
+})->middleware('shared_view');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('activity', 'ActivityController', ['only' => ['store']]);
-Route::resource('comments', 'CommentController', ['only' => ['store', 'update', 'destroy']]);
-Route::resource('messages', 'MessageController', ['except' => ['edit', 'update']]);
-Route::resource('messageslikes', 'MessageLikeController', ['only' => ['store', 'delete']]);
-Route::resource('posts', 'PostController', ['except' => []]);
-Route::resource('postslikes', 'PostLikeController', ['only' => ['store', 'delete']]);
-Route::resource('users', 'UserController', ['except' => ['index', 'create', 'store']]);
+Route::get('/home', 'HomeController@index')->name('home')->middleware('shared_view');
+Route::resource('activity', 'ActivityController', ['only' => ['store']])->middleware('shared_view');
+Route::resource('comments', 'CommentController', ['only' => ['store', 'update', 'destroy']])->middleware('shared_view');
+Route::resource('messages', 'MessageController', ['except' => ['edit', 'update']])->middleware('shared_view');
+Route::resource('messagelikes', 'MessageLikeController', ['only' => ['store', 'delete']])->middleware('shared_view');
+Route::resource('posts', 'PostController', ['except' => []])->middleware('shared_view');
+Route::get('allposts', 'PostController@allPosts')->middleware('shared_view');
+Route::get('friendposts', 'PostController@friendPosts')->middleware('shared_view');
+Route::get('myposts', 'PostController@myPosts')->middleware('shared_view');
+Route::resource('postlikes', 'PostLikeController', ['only' => ['delete']])->middleware('shared_view');
+Route::post('postlikes/store','PostLikeController@store')->middleware('shared_view');;
+Route::post('postlikes/destroy','PostLikeController@destroy')->middleware('shared_view');;
+Route::resource('users', 'UserController', ['except' => ['index', 'create', 'store']])->middleware('shared_view');

@@ -22,10 +22,10 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('picture_path')->nullable();
             $table->date('date_born')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->boolean('is_online')->default(false);
             $table->integer('role')->unsigned()->default(1);
-            $table->integer('privacy_type_id')->unsigned();
+            $table->integer('privacy_type_id')->unsigned()->default(1);
             $table->integer('deleter_id')->unsigned()->nullable();
 
             $table->foreign('deleter_id')->references('id')->on('users');

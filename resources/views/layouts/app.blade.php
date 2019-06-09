@@ -18,6 +18,14 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/navigation.css') }}" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="{{ asset('font-awesome/css/fontawesome.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('font-awesome/css/regular.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('font-awesome/css/solid.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('font-awesome/css/brands.min.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -33,7 +41,14 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item">
+                            <a href="/posts" class="nav-link">Posts</a>
+                        </li>
+                        @auth
+                            <li class="nav-item">
+                                <a href="/friends" class="nav-link">Friends</a>
+                            </li>
+                        @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -49,12 +64,22 @@
                                 </li>
                             @endif
                         @else
+                            <li id="envelope-list-item" class="nav-item">
+                                <a href="/messages">
+                                    <i class="far fa-envelope fa-2x"></i>
+                                    <span>{{$message_count}}</span>
+                                </a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/users/show/{{Auth::user()->id}}">
+                                        My Profile
+                                    </a>
+                                    
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

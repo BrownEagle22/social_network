@@ -17,6 +17,8 @@ class CreateUserMessagesTable extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id')->unsigned();
             $table->integer('message_id')->unsigned();
+            $table->boolean('is_deleted')->default(false);
+            $table->boolean('is_read')->default(false);
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('message_id')->references('id')->on('messages');

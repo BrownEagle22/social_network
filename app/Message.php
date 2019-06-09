@@ -18,7 +18,22 @@ class Message extends Model
     }
 
     public function isDeleted($userId) {
-        return MessageDeletion::where('user_id', '=', $userId)
-            ->where('message_id', '=', $this->id)->get()->count() === 0;
+        $userMessage = UserMessage::where('user_id', '=', $userId)
+            ->where('message_id', '=', $this->id)->get();
+
+        if ($userMessage->count() === 0)
+            return true;
+        else
+            return $userMessage->first()->is_deleted;
+    }
+
+    public function isRead($userId) {
+        $userMessage = UserMessage::where('user_id', '=', $userId)
+            ->where('message_id', '=', $this->id)->get();
+
+        if ($userMessage->count() === 0)
+            return true;
+        else
+            return $userMessage->first()->is_read;
     }
 }

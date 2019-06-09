@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -43,7 +44,7 @@ class User extends Authenticatable
     }
 
     public function posts() {
-        return $this->hasMany('App\Post');
+        return $this->hasMany('App\Post', 'owner_id');
     }
 
     public function comments() {
@@ -51,7 +52,17 @@ class User extends Authenticatable
     }
 
     public function friends() {
-        return $this->belongsToMany('App\User', 'user_friends', 'user_id', 'user_friend_id');
+        $friendIds = [];
+        foreach (UserFriends::all() as $userFriend)
+        {
+            if ($userFriend['user_id'] === Auth::user()['id'])
+                $friendIds[] = $userFriend['user_friend_id'];
+            else if ($userFriend['user_friend_id'] === Auth::user()['id'])
+                $friendIds[] = $userFriend['user_id'];
+        }
+
+        return User::where('deleter_id', '=', null)
+            ->whereIn('id', $friendIds);
     }
 
     public function messagesReceived() {

@@ -17,7 +17,7 @@ class CreateActivityTable extends Migration
             $table->bigIncrements('id');
             $table->integer('activity_type_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->string('description');
+            $table->text('description');
 
             $table->foreign('activity_type_id')->references('id')->on('activity_type');
             $table->foreign('user_id')->references('id')->on('users');
