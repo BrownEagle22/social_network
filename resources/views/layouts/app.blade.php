@@ -11,6 +11,7 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/common.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -46,7 +47,10 @@
                         </li>
                         @auth
                             <li class="nav-item">
-                                <a href="/friends" class="nav-link">Friends</a>
+                                <a href="/posts/create" class="nav-link">Create post</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/users/friends" class="nav-link">Friends</a>
                             </li>
                         @endauth
                     </ul>

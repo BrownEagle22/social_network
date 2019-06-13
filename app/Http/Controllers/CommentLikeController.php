@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CommentLike;
+use Illuminate\Support\Facades\Auth;
+use App\Comment;
 
 class CommentLikeController extends Controller
 {
@@ -46,13 +48,30 @@ class CommentLikeController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+
+        $commentLike = CommentLike::where('user_id', '=', Auth::user()['id'])
+            ->where('comment_id', '=', $data['comment_id'])
+            ->where('is_positive', '=', $data['is_positive'])
+            ->first();
+
+        if ($commentLike)
+            return ['success' => false];
+
+        $commentLike = CommentLike::where('user_id', '=', Auth::user()['id'])
+            ->where('comment_id', '=', $data['comment_id'])
+            ->where('is_positive', '<>', $data['is_positive'])
+            ->first();
+
+        if ($commentLike)
+            $commentLike->delete();
+        
         $like = new CommentLike();
         $like->is_positive = $data['is_positive'];
         $like->user()->associate(Auth::user());
         $like->comment()->associate(Comment::find($data['comment_id']));
         $like->save();
 
-        return null;
+        return ['success' => true];
     }
 
     /**
@@ -95,9 +114,23 @@ class CommentLikeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        CommentLike::find($id)->delete();
-        return null;
+        $data = $request->all();
+
+        $commentLike = CommentLike::where('user_id', '=', Auth::user()['id'])
+            ->where('comment_id', '=', $data['comment_id'])
+            ->where('is_positive', '=', $data['is_positive'])
+            ->first();
+
+        if ($commentLike)
+        {
+            $commentLike->delete();
+            return ['success' => true];
+        }
+        else
+        {
+            return ['success' => false];
+        }
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Facades\Auth;
+use App\Comment;
+use Illuminate\Support\Facades\Storage;
+use App\Activity;
 
 class PostController extends Controller
 {
@@ -39,10 +42,15 @@ class PostController extends Controller
     {
         $posts = Post::whereHas('user.friends', function($q)
         {
-            $q->where('user_id', '=', Auth::user()->id)
-                ->orWhere('user_friend_id', '=', Auth::user()->id);
+            $q->where('user_friend_id', '=', Auth::user()->id);
         })->where('deleter_id', '=', null)
             ->orderBy('created_at', 'desc')->get();
+
+        $posts->merge(Post::whereHas('user.friendsReverse', function($q)
+        {
+            $q->where('user_id', '=', Auth::user()->id);
+        })->where('deleter_id', '=', null)
+            ->orderBy('created_at', 'desc')->get());
 
         foreach ($posts as $post)
         {
@@ -102,14 +110,24 @@ class PostController extends Controller
     {
         $data = $request->all();
         $post = new Post();
-        $post->owner_id = $data['owner_id'];
+        $post->owner_id = Auth::user()->id;
         $post->privacy_type_id = $data['privacy_type_id'];
         $post->title = $data['title'];
         $post->description = $data['description'];
-        $post->picture_path = $request->file('post')->store('posts');
+
+        if ($request->hasFile('post')) {
+            $post->picture_path = '/storage/'.$request->file('post')->store('posts', ['disk' => 'public']);
+        }
+
         $post->save();
 
-        return redirect()->action('HomeController@index')->withMessage('Post added!');
+        Activity::create([
+            'activity_type_id' => 1,
+            'user_id' => Auth::user()->id,
+            'description' => 'created post "'.$post->title.'"'
+        ]);
+
+        return redirect()->action('PostController@show', [$post->id])->withMessage('Post added!');
     }
 
     /**
@@ -121,7 +139,37 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::find($id);
-        return view('post_show', ['post' => $post]);
+        $post->addLikeData();
+
+        $post['can_change'] =
+            Auth::user()->id == $post->owner_id ||
+            Auth::user()->isAdmin() ||
+            Auth::user()->isModerator();
+
+        $comments = $post->comments()
+            ->where('deleter_id', null)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($comments as $comment)
+        {
+            $comment->addLikeData();
+            if (!$comment->user->picture_path) {
+                $comment->user->picture_path = asset('/images/'.env('DEFAULT_USER_PIC_NAME'));
+            }
+            $comment['can_change'] =
+                Auth::user()->id == $comment->owner_id ||
+                Auth::user()->isAdmin() ||
+                Auth::user()->isModerator();
+            //$comment['user'] = $comment->user()->first();
+        }
+
+        $user = Auth::user();
+        if (!$user['picture_path']) {
+            $user['picture_path'] = asset('/images/'.env('DEFAULT_USER_PIC_NAME'));
+        }
+
+        return view('post_show', ['post' => $post, 'user' => $user,'comments' => $comments]);
     }
 
     /**
@@ -145,20 +193,34 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $postToUpdate = Post::find($id);
-        $postToUpdate->update([
-            'title' => $request['title'],
-            'description' => $request['description'],
-            'privacy_type_id' => $request['privacy_type_id']
-        ]);
+        $data = $request->all();
 
-        if ($request->files['post']) {
-            $postToUpdate->update([
-                'picture_path' => $request->files['post']->store('posts')
-            ]);
+        $postToUpdate = Post::find($id);
+        if (Auth::user()->id != $postToUpdate->owner_id &&
+            !Auth::user()->isAdmin() &&
+            !Auth::user()->isModerator()) {
+            
+            abort('403');
         }
 
-        return redirect()->action('PostController@myPosts');
+        $picturePath = $postToUpdate->picture_path;
+        if ($request->hasFile('post')) {
+            $defaultPath = asset('/images/'.env('DEFAULT_USER_PIC_NAME'));
+            if ($defaultPath != $postToUpdate->picture_path) {
+                Storage::delete('app/posts/'.$postToUpdate);
+            }
+
+            $picturePath = '/storage/'.$request->file('post')->store('posts', ['disk' => 'public']);
+        }
+
+        $postToUpdate->update([
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'privacy_type_id' => $data['privacy_type_id'],
+            'picture_path' => $picturePath
+        ]);
+
+        return redirect()->action('PostController@show', [$id]);
     }
 
     /**
@@ -169,8 +231,24 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //TODO: Nosacījums
-        Post::find($id)->delete();
+        $post = Post::find($id);
+        if (Auth::user()->id != $post->owner_id &&
+            !Auth::user()->isAdmin() &&
+            !Auth::user()->isModerator()) {
+            
+            abort('403');
+        }
+
+        $post->update([
+            'deleter_id' => Auth::user()->id
+        ]);
+
+        Activity::create([
+            'activity_type_id' => 2,
+            'user_id' => Auth::user()->id,
+            'description' => 'deleted post "'.$post->title.'"'
+        ]);
+
         return redirect()->action('PostController@index');
     }
 }

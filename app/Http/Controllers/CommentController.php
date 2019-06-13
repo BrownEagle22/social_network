@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Comment;
+use Illuminate\Support\Facades\Auth;
+use App\Post;
 
 class CommentController extends Controller
 {
@@ -47,9 +49,9 @@ class CommentController extends Controller
     {
         $data = $request->all();
         $comment = new Comment();
-        $comment->user_id = Auth::user()->id;
+        $comment->owner_id = Auth::user()->id;
         $comment->post()->associate(Post::find($data['post_id']));
-        $comment->message = $data['message'];
+        $comment->text = $data['text'];
         $comment->save();
 
         return redirect()->action('PostController@show', [$comment->post_id]);
@@ -87,9 +89,18 @@ class CommentController extends Controller
     public function update(Request $request, $id)
     {
         $comment = Comment::find($id);
-        $comment->update(['text' => $request['text']]);
-        
-        return redirect()->action('PostController@show', [$comment->post_id]);
+
+        if ($comment->owner_id == Auth::user()->id ||
+            Auth::user()->isAdmin() ||
+            Auth::user()->isModerator())
+        {
+            $comment->update(['text' => $request['text']]);     
+            return redirect()->action('PostController@show', [$comment->post_id]);                 
+        }
+        else
+        {
+            abort('403');
+        }
     }
 
     /**
@@ -101,9 +112,18 @@ class CommentController extends Controller
     public function destroy($id)
     {
         $comment = Comment::find($id);
-        $comment->deleter_id = Auth::user()->id;
-        $comment->save();
 
-        return redirect()->action('PostController@show', [$comment->post_id]);
+        if ($comment->owner_id == Auth::user()->id ||
+            Auth::user()->isAdmin() ||
+            Auth::user()->isModerator())
+        {
+            $comment->deleter_id = Auth::user()->id;
+            $comment->save();       
+            return redirect()->action('PostController@show', [$comment->post_id]);                 
+        }
+        else
+        {
+            abort('403');
+        }
     }
 }

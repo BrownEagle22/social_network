@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('picture_path')->nullable();
             $table->date('date_born')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('is_online')->default(false);
+            $table->dateTime('online_till');
             $table->integer('role')->unsigned()->default(1);
             $table->integer('privacy_type_id')->unsigned()->default(1);
             $table->integer('deleter_id')->unsigned()->nullable();

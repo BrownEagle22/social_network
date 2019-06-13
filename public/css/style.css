@@ -1,5 +1,6 @@
 #post-menu {
     width: 100%;
+    margin-bottom: 20px;
 }
 
 #post-list-container {
@@ -12,7 +13,7 @@
 }
 
 #post-list-container .card {
-    margin: 10px 0;
+    margin-bottom: 20px;
 }
 
 #post-list-container .card-footer > div {
@@ -35,6 +36,16 @@
     text-align: right;
 }
 
+#post-list-container .card,
+#comment-list-container .card {
+    width: 100%;
+}
+
+.post-picture {
+    height: 400px;
+    max-width: 100%;
+    object-fit: cover;
+}
 
 /*RIGHT PANEL*/
 .green-circle {
@@ -44,4 +55,59 @@
     border-radius: 10px;
     background-color: green;
     margin-right: 10px;
+}
+
+.friends-online-container {
+    margin-bottom: 15px;
+}
+
+#right-panel-container {
+    position: sticky;
+    top: 20px;
+}
+
+#comments {
+    padding-left: 15px;
+}
+
+#comments .profile-picture {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.break-word {
+    word-break: break-word;
+}
+
+#user-container .card {
+    margin: auto;
+    width: 100%;
+}
+
+.user-picture {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+#user-container .picture-upload {
+    width: 50%;
+}
+
+#friends-section .card {
+    width: 150px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+#friends-section .card-image-top {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
 }

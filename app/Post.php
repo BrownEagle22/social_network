@@ -9,7 +9,7 @@ class Post extends Model
 {
     protected $table = 'posts';
     protected $guarded = [];
-    protected $fillable = ['title', 'description', 'picture_path', 'privacy_type_id'];
+    protected $fillable = ['title', 'description', 'picture_path', 'privacy_type_id', 'deleter_id'];
 
     public function user()
     {
@@ -55,6 +55,8 @@ class Post extends Model
     }
 
     public function addCommentCount() {
-        $this['comment_count'] = $this->comments()->get()->count();
+        $this['comment_count'] = $this->comments()
+        ->where('deleter_id', null)
+        ->get()->count();
     }
 }

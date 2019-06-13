@@ -21,18 +21,29 @@ class SharedViewData
     {
         if (Auth::check())
         {
+            $currentTime = date("Y-m-d H:i:s");
+            $expireTime = date('Y-m-d H:i:s',strtotime('+1 hour',strtotime($currentTime)));
+            Auth::user()->update(['online_till' => $expireTime]);
+
             $messageCount = UserMessage::where('user_id', '=', Auth::user()['id'])
                 ->where('is_read', '=', 'false')
                 ->get()->count();
 
+            $currentTime = strtotime(date("Y-m-d H:i:s"));
+
             $onlineFriends = Auth::user()->friends()
-                ->where('is_online', '=', 1)
-                ->get();
+                ->where('online_till', '>', date("Y-m-d H:i:s"))
+                ->get()
+                ->merge(Auth::user()->friendsReverse()
+                    ->where('online_till', '>', date("Y-m-d H:i:s"))
+                    ->get());
+
+            $friends = Auth::user()->friends()->get()
+                ->merge(Auth::user()->friendsReverse()->get());
 
             $activities = new Collection();
-            foreach (Auth::user()->friends()->get() as $friend)
+            foreach ($friends as $friend)
             {
-                $coll = $friend->activities()->get();
                 $activities = $activities->merge($friend->activities()->get());
             }
             $activities = $activities->sortByDesc('created_at')->take(5);

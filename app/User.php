@@ -18,7 +18,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name', 'email', 'password', 'surname', 'picture_path', 'date_born',
-        'description', 'is_online', 'role', 'privacy_type_id', 'deleter_id'
+        'description', 'online_till', 'role', 'privacy_type_id', 'deleter_id'
     ];
 
     /**
@@ -51,7 +51,7 @@ class User extends Authenticatable
         return $this->hasMany('App\Comment');
     }
 
-    public function friends() {
+    /*public function friends() {
         $friendIds = [];
         foreach (UserFriends::all() as $userFriend)
         {
@@ -63,6 +63,14 @@ class User extends Authenticatable
 
         return User::where('deleter_id', '=', null)
             ->whereIn('id', $friendIds);
+    }*/
+
+    public function friends() {
+        return $this->belongsToMany('App\User', 'user_friends', 'user_id', 'user_friend_id');
+    }
+
+    public function friendsReverse() {
+        return $this->belongsToMany('App\User', 'user_friends', 'user_friend_id', 'user_id');
     }
 
     public function messagesReceived() {
