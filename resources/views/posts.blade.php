@@ -11,17 +11,22 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-9">
+            @if(session()->has('message'))
+                <div class="alert alert-success">
+                    {{ session()->get('message') }}
+                </div>
+            @endif
             <div id="post-list-container" class="row">
                 <ul id="post-menu" class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link {{$post_type === 1 ? 'active' : ''}}" href="/allposts">Public posts</a>
+                        <a class="nav-link {{$post_type === 1 ? 'active' : ''}}" href="/allposts">{{ __('navigation.public_posts') }}</a>
                     </li>
                     @auth
                         <li class="nav-item">
-                            <a class="nav-link {{$post_type === 2 ? 'active' : ''}}" href="/friendposts">Friends posts</a>
+                            <a class="nav-link {{$post_type === 2 ? 'active' : ''}}" href="/friendposts">{{ __('navigation.friends_posts') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{$post_type === 3 ? 'active' : ''}}" href="/myposts">My posts</a>
+                            <a class="nav-link {{$post_type === 3 ? 'active' : ''}}" href="/myposts">{{ __('navigation.my_posts') }}</a>
                         </li>
                     @endauth
                 </ul>

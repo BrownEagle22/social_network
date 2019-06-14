@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->belongsToMany('App\User', 'user_friends', 'user_friend_id', 'user_id');
     }
 
+    public function acceptedFriends($isAccepted) {
+        return $this->friends()->where('is_accepted', $isAccepted)->get()
+            ->merge(Auth::user()->friendsReverse()->where('is_accepted', $isAccepted)->get());
+    }
+
     public function messagesReceived() {
         return $this->belongsToMany('App\Message', 'user_messages');
     }

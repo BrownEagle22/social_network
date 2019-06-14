@@ -15,7 +15,8 @@ class UserFriendsSeeder extends Seeder
         UserFriends::truncate();
         UserFriends::create([
             'user_id' => 1,
-            'user_friend_id' => 2
+            'user_friend_id' => 2,
+            'is_accepted' => true
         ]);
     }
 }

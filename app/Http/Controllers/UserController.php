@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use App\UserFriends;
+use App\Activity;
 
 class UserController extends Controller
 {
@@ -30,8 +32,8 @@ class UserController extends Controller
 
     public function listFriends()
     {
-        $friends = Auth::user()->friends()->get()
-            ->merge(Auth::user()->friendsReverse()->get());
+        $friends = Auth::user()->friends()->where('is_accepted', true)->get()
+            ->merge(Auth::user()->friendsReverse()->where('is_accepted', true)->get());
 
         foreach ($friends as $friend)
         {
@@ -40,6 +42,27 @@ class UserController extends Controller
         }
 
         return view('list_friends', ['friends' => $friends]);
+    }
+
+    public function askFriend($id)
+    {
+        $potentialFriend = User::find($id);
+        if (!$potentialFriend)
+            return abort(404);
+
+        $friendBind = Auth::user()->friends()->where('user_friend_id', $id)->get()
+            ->merge(Auth::user()->friendsReverse()->where('user_id', $id)->get());
+            
+        if ($friendBind->count() == 0 && $id != Auth::user()->id)
+        {
+            $bind = new UserFriends();
+            $bind->user_id = Auth::user()->id;
+            $bind->user_friend_id = $id;
+            $bind->save();
+            return redirect()->back()->withMessage('Friend request sent!');
+        }
+
+        return redirect()->back()->withMessage('Friend request was already sent!');
     }
 
     /**
@@ -76,18 +99,33 @@ class UserController extends Controller
             abort(404);
         }
 
-        if ($user->privacy_type_id == 2 && $user->id != Auth::user()->id) {
-            $friend = $user->friends()
+        /*$friend = $user->friends()
+            ->where('user_friend_id', Auth::user()->id)
+            ->where('is_accepted', true)
+            ->get()
+            ->merge($user->friendsReverse()
                 ->where('user_id', Auth::user()->id)
-                ->get()
-                ->merge($user->friendsReverse()
-                    ->where('user_id', Auth::user()->id)
-                    ->get());
+                ->where('is_accepted', true)
+                ->get());*/
 
-            if ($friend->count() == 0 && !Auth::user()->isAdmin()) {
-                $user['forbidden'] = true;
-            }
-        }
+        $friendship = UserFriends::where('user_id', $user->id)
+            ->where('user_friend_id', Auth::user()->id)
+            ->where('is_accepted', true)
+            ->get()
+            ->merge(UserFriends::where('user_friend_id', $user->id)
+                ->where('user_id', Auth::user()->id)
+                ->where('is_accepted', true)
+                ->get());
+
+        $user['is_friend'] = $friendship->count() != 0;
+        if ($user['is_friend'])
+            $user['friendship_id'] = $friendship->first()->id;
+
+        $user['forbidden'] = $user->privacy_type_id == 2 && 
+            !$user['is_friend'] && 
+            $user->id != Auth::user()->id && 
+            !Auth::user()->isAdmin();
+
         if (!$user->picture_path) {
             $user->picture_path = asset('/images/'.env('DEFAULT_USER_PIC_NAME'));
         }
@@ -145,7 +183,13 @@ class UserController extends Controller
             'privacy_type_id' => $request['privacy_type_id']
         ]);
 
-        return redirect()->action('UserController@show', [$id])->withMessage('User info changed!');
+        $activity = new Activity();
+        $activity->user_id = Auth::user()->id;
+        $activity->activity_type_id = 3;
+        $activity->description = 'edited profile data';
+        $activity->save();
+
+        return redirect()->action('UserController@show', [$id])->withMessage('Changes saved!');
     }
 
     /**
@@ -161,6 +205,6 @@ class UserController extends Controller
         $user->deleter_id = Auth::user()->id;
         $user->save();
 
-        return redirect()->action('HomeController@index')->withMessage('User deleted!');
+        return redirect()->action('PostController@index')->withMessage('User deleted!');
     }
 }

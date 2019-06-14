@@ -43,14 +43,14 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a href="/posts" class="nav-link">Posts</a>
+                            <a href="/posts" class="nav-link">{{ __('navigation.posts') }}</a>
                         </li>
                         @auth
                             <li class="nav-item">
-                                <a href="/posts/create" class="nav-link">Create post</a>
+                                <a href="/posts/create" class="nav-link">{{ __('navigation.create_post') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a href="/users/friends" class="nav-link">Friends</a>
+                                <a href="/users/friends" class="nav-link">{{ __('navigation.friends') }}</a>
                             </li>
                         @endauth
                     </ul>
@@ -58,20 +58,28 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="/setlocale/lv">LV</a>
+                        </li>
+                        <li class="nav-item mr-4">
+                            <a class="nav-link" href="/setlocale/en">ENG</a>
+                        </li>
                         @guest
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                <a class="nav-link" href="{{ route('login') }}">{{ __('navigation.login') }}</a>
                             </li>
                             @if (Route::has('register'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('navigation.register') }}</a>
                                 </li>
                             @endif
                         @else
                             <li id="envelope-list-item" class="nav-item">
                                 <a href="/messages">
                                     <i class="far fa-envelope fa-2x"></i>
-                                    <span>{{$message_count}}</span>
+                                    @if ($message_count > 0)
+                                        <span>{{$message_count}}</span>                                        
+                                    @endif
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
@@ -81,13 +89,13 @@
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="/users/show/{{Auth::user()->id}}">
-                                        My Profile
+                                        {{ __('navigation.my_profile') }}
                                     </a>
                                     
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        {{ __('navigation.logout') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

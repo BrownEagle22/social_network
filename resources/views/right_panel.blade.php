@@ -1,12 +1,12 @@
 <div id="right-panel-container">
     <div class="card friends-online-container">
         <div class="card-header">
-            Friends online
+                {{ __('navigation.friends_online') }}
         </div>
         <div class="card-body">
             <div class="card-text">
                 @if ($online_friends->count() === 0)
-                    None
+                {{ __('navigation.none') }}
                 @else
                     @foreach ($online_friends as $friend)
                         <p class="friend-online">
@@ -20,12 +20,12 @@
 
     <div class="card activities-container">
         <div class="card-header">
-            Friends activities
+            {{ __('navigation.friends_activities') }}
         </div>
         <div class="card-body">
             <div class="card-text">
                 @if ($activities->count() === 0)
-                    None
+                {{ __('navigation.none') }}
                 @else
                     @foreach ($activities as $activity)
                         <p>

@@ -18,6 +18,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-9">
+            @if(session()->has('message'))
+                <div class="alert alert-success">
+                    {{ session()->get('message') }}
+                </div>
+            @endif
             <div id="user-container" class="row col-md-6 offset-md-3">
                 <div class="card">
                     <div class="card-body">
@@ -35,10 +40,14 @@
                                     <strong class="text-primary text-center mb-3 d-block">ADMIN</strong>
                                 @endif
                                 <p>Post count: {{$user->posts->count()}}</p>
-                                <p>Friend count: {{$user->friends->count() + $user->friendsReverse->count()}}</p>
+                                <p>Friend count: {{$user->acceptedFriends(true)->count()}}</p>
                                 <p>Email: {{$user->email}}</p>
                                 <p>Description: {{$user->description}}</p>
-                                <a href=""><button class="btn btn-success text-center">Send friend request</button></a>
+                                @if (!$user->is_friend && $user->id != Auth::user()->id)
+                                    <a href="/users/askfriend/{{$user->id}}"><button class="btn btn-success text-center">Send friend request</button></a>                                    
+                                @elseif ($user->is_friend && $user->id != Auth::user()->id)
+                                    <a href="/userfriends/delete/{{$user->friendship_id}}"><button class="btn btn-danger text-center">End friendship</button></a>                                    
+                                @endif
 
                                 @if (Auth::user()->id == $user->id)
                                     <a class="ml-4 float-right" href="/users/edit/{{$user->id}}"><i class="far fa-edit"></i></a>                              

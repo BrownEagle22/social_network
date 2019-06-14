@@ -14,16 +14,19 @@ class ActivityTypeSeeder extends Seeder
     {
         ActivityType::truncate();
         ActivityType::create([
+            'id' => 1,
             'name' => 'post_new',
             'description' => 'Created new post'
         ]);
         ActivityType::create([
+            'id' => 2,
             'name' => 'post_delete',
             'description' => 'Deleted post'
         ]);
         ActivityType::create([
-            'name' => 'like_post',
-            'description' => 'Liked post'
+            'id' => 3,
+            'name' => 'edited_profile',
+            'description' => 'Edited profile data'
         ]);
     }
 }

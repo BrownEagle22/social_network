@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,11 @@
 Route::get('/', function () {
     return redirect()->action('PostController@index');
 })->middleware('shared_view');
+
+Route::get('/setlocale/{locale}', function($locale) {
+    Session::put('locale', $locale);
+    return redirect()->back();
+});
 
 Auth::routes();
 
@@ -48,3 +55,8 @@ Route::get('users/show/{id}', 'UserController@show')->middleware('shared_view');
 Route::get('users/edit/{id}', 'UserController@edit')->middleware('shared_view');
 Route::post('users/update/{id}', 'UserController@update')->middleware('shared_view');
 Route::get('users/friends', 'UserController@listfriends')->middleware('shared_view');
+Route::get('users/askfriend/{id}', 'UserController@askFriend')->middleware('shared_view');
+
+
+Route::get('userfriends/accept/{id}', 'UserFriendsController@accept')->middleware('shared_view');
+Route::get('userfriends/delete/{id}', 'UserFriendsController@destroy')->middleware('shared_view');

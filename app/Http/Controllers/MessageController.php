@@ -7,6 +7,8 @@ use App\Message;
 use App\UserMessage;
 use App\MessageDeletion;
 use Illuminate\Support\Facades\Auth;
+use App\UserFriends;
+use App\User;
 
 class MessageController extends Controller
 {
@@ -28,7 +30,39 @@ class MessageController extends Controller
     public function index()
     {
         $messages = Message::where('user_from_id', '=', Auth::user()->id)->get();
-        return view('messages', ['messages' => $messages]);
+        $messageData = [];
+        foreach ($messages as $message)
+        {
+            $messageData[] = [
+                'id' => $message->id,
+                'user' => $message->user(),
+                'subject' => $message->subject,
+                'is_friend_request' => false,
+                'created_at' => $message->created_at
+            ];
+        }
+
+        $friendRequests = UserFriends::where('user_friend_id', Auth::user()->id)
+            ->where('is_accepted', false)->get();
+
+        foreach ($friendRequests as $friendRequest)
+        {
+            $user = null;
+            if ($friendRequest->user_id == Auth::user()->id)
+                $user = User::find($friendRequest->user_friend_id);
+            else
+                $user = User::find($friendRequest->user_id);
+            
+            $messageData[] = [
+                'id' => $friendRequest->id,
+                'user' => $user,
+                'subject' => 'Friend request',
+                'is_friend_request' => true,
+                'created_at' => $friendRequest->created_at
+            ];
+        }
+
+        return view('messages', ['messages' => $messageData]);
     }
 
     /**

@@ -42,13 +42,15 @@ class PostController extends Controller
     {
         $posts = Post::whereHas('user.friends', function($q)
         {
-            $q->where('user_friend_id', '=', Auth::user()->id);
+            $q->where('user_friend_id', '=', Auth::user()->id)
+                ->where('is_accepted', true);
         })->where('deleter_id', '=', null)
             ->orderBy('created_at', 'desc')->get();
 
         $posts->merge(Post::whereHas('user.friendsReverse', function($q)
         {
-            $q->where('user_id', '=', Auth::user()->id);
+            $q->where('user_id', '=', Auth::user()->id)
+                ->where('is_accepted', true);
         })->where('deleter_id', '=', null)
             ->orderBy('created_at', 'desc')->get());
 

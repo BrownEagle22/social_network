@@ -29,20 +29,23 @@ class SharedViewData
                 ->where('is_read', '=', 'false')
                 ->get()->count();
 
+            $messageCount += Auth::user()->friendsReverse()
+                ->where('is_accepted', false)
+                ->get()->count();
+
             $currentTime = strtotime(date("Y-m-d H:i:s"));
 
             $onlineFriends = Auth::user()->friends()
+                ->where('is_accepted', true)
                 ->where('online_till', '>', date("Y-m-d H:i:s"))
                 ->get()
                 ->merge(Auth::user()->friendsReverse()
+                    ->where('is_accepted', true)
                     ->where('online_till', '>', date("Y-m-d H:i:s"))
                     ->get());
 
-            $friends = Auth::user()->friends()->get()
-                ->merge(Auth::user()->friendsReverse()->get());
-
             $activities = new Collection();
-            foreach ($friends as $friend)
+            foreach (Auth::user()->acceptedFriends(true) as $friend)
             {
                 $activities = $activities->merge($friend->activities()->get());
             }
