@@ -112,6 +112,9 @@
         <main class="py-4">
             @yield('content')
         </main>
+        <footer class="py-2 pl-3">
+            © 2019 Developed By Ēriks Žeibe. All Rights Reserved.
+        </footer>
     </div>
 </body>
 </html>
