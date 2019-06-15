@@ -21,6 +21,7 @@ main {
 #message-section,
 #post-list-container {
     padding-left: 15px;
+    padding-right: 15px;
 }
 
 .post-item-footer {
