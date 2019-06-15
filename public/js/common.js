@@ -1,3 +1,7 @@
+$("document").ready(function() {
+    $("body>div").eq(1).remove();
+});
+
 var waitingLike = false;
 
 function toggleBigLike(isPositive, containerId, className, controllerName, inputData) {

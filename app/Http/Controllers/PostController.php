@@ -118,7 +118,7 @@ class PostController extends Controller
         $post->description = $data['description'];
 
         if ($request->hasFile('post')) {
-            $post->picture_path = '/storage/'.$request->file('post')->store('posts', ['disk' => 'public']);
+            $post->picture_path = '/uploads/'.$request->file('post')->store('posts', ['disk' => 'public']);
         }
 
         $post->save();
@@ -212,7 +212,7 @@ class PostController extends Controller
                 Storage::delete('app/posts/'.$postToUpdate);
             }
 
-            $picturePath = '/storage/'.$request->file('post')->store('posts', ['disk' => 'public']);
+            $picturePath = '/uploads/'.$request->file('post')->store('posts', ['disk' => 'public']);
         }
 
         $postToUpdate->update([

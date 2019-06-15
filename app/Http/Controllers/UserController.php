@@ -170,7 +170,7 @@ class UserController extends Controller
                 Storage::delete('app/users/'.$picture_path);
             }
 
-            $picture_path = '/storage/'.$request->file('picture')->store('users', ['disk' => 'public']);
+            $picture_path = '/uploads/'.$request->file('picture')->store('users', ['disk' => 'public']);
         }
 
         User::find($id)->update([
